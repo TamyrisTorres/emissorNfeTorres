@@ -19,13 +19,12 @@ public class Produto {
 
     @Setter
     @Getter
-    @NotNull(message = "O código não pode ser nulo.")
-    @UniqueElements
+    @Column(name = "codigo-produto", unique = true, nullable = false)
     private Long codigo;
 
     @Setter
     @Getter
-    @NotNull(message = "O nome não pode ser nulo.")
+    @Column(name = "codigo-produto", nullable = false)
     private String nome;
 
     @Setter

@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.validator.constraints.UniqueElements;
 import org.hibernate.validator.constraints.br.CNPJ;
 
 @Entity
@@ -21,21 +20,21 @@ public class Empresa {
 
     @Setter
     @Getter
-    @NotNull(message = "O nome não pode ser nulo.")
+    @Column(name = "razao-social", unique = true, nullable = false)
     private String razaoSocial;
 
     @Setter
     @Getter
-    @NotNull(message = "O CNPJ não pode ser nulo.")
-    @UniqueElements
+    @Column(name = "cnpj", unique = true, nullable = false)
     private CNPJ CNPJ;
 
     @Setter
     @Getter
-    @NotNull(message = "O endereço não pode ser nulo.")
-    private String endereco;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "endereco_id", referencedColumnName = "id")
+    private Endereco endereco;
 
-    public Empresa(String razaoSocial, org.hibernate.validator.constraints.br.CNPJ CNPJ, String endereco) {
+    public Empresa(String razaoSocial, CNPJ CNPJ, Endereco endereco) {
         this.razaoSocial = razaoSocial;
         this.CNPJ = CNPJ;
         this.endereco = endereco;

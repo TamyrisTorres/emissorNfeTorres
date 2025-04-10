@@ -17,7 +17,7 @@ public class Usuario {
 
     @Setter
     @Getter
-    @NotNull(message = "O nome não pode ser nulo.")
+    @Column(name = "nome-usuario")
     private String nome;
 
     public Usuario(String nome) {
