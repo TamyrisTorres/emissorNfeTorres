@@ -15,6 +15,8 @@ import org.hibernate.validator.constraints.br.CNPJ;
 public class Empresa {
 
     @Id
+    @Setter
+    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 

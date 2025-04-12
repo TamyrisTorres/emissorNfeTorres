@@ -14,8 +14,10 @@ public class Cliente {
 
 
     @Id
+    @Setter
+    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Setter
     @Getter
@@ -24,13 +26,9 @@ public class Cliente {
 
     @Setter
     @Getter
-    @Column(name = "cnpj", unique = true)
-    private CNPJ CNPJ;
+    @Column(name = "cnpj-cpf", unique = true)
+    private String cnpjCpf;
 
-    @Setter
-    @Getter
-    @Column(name = "cpf", unique = true)
-    private CPF CPF;
 
     @Setter
     @Getter
@@ -44,12 +42,10 @@ public class Cliente {
     private String telefone;
 
     public Cliente(String nome,
-                   org.hibernate.validator.constraints.br.CNPJ CNPJ,
-                   org.hibernate.validator.constraints.br.CPF CPF,
+                   String cnpjCpf,
                    Endereco endereco, String telefone) {
         this.nome = nome;
-        this.CNPJ = CNPJ;
-        this.CPF = CPF;
+        this.cnpjCpf = cnpjCpf;
         this.endereco = endereco;
         this.telefone = telefone;
     }
