@@ -14,19 +14,17 @@ public class ClienteService {
     @Autowired
     private ClienteDao clienteDao;
 
-    private String addCliente(Cliente cliente){
-        boolean hasCliente = clienteDao.existsById(cliente.getId());
+    public Cliente addCliente(Cliente cliente){
+        Optional<Cliente> clienteOptional = clienteDao.findById(cliente.getId());
 
-        if (!hasCliente){
-            clienteDao.save(cliente);
-
-            return "Cliente cadastrado com Sucesso.";
+        if (!clienteOptional.isPresent()){
+            return clienteDao.save(cliente);
         }
 
-        return "Cliente não cadastrado";
+        return null;
     }
 
-    private List<Cliente> getAllClientes(){
+    public List<Cliente> getAllClientes(){
         List<Cliente> clientes = clienteDao.findAll();
 
         if(!clientes.isEmpty()){
@@ -35,7 +33,7 @@ public class ClienteService {
         return null;
     }
 
-    private Cliente getCliente(Long id){
+    public Cliente getCliente(Integer id){
         Optional<Cliente> cliente = clienteDao.findById(id);
 
         if (cliente.isPresent()){
@@ -45,7 +43,7 @@ public class ClienteService {
         return null;
     }
 
-    private String upDateCliente(Long id, Cliente newCliente){
+    public String upDateCliente(Integer id, Cliente newCliente){
         Optional<Cliente> clienteOptional = clienteDao.findById(id);
 
         if(clienteOptional.isPresent()){
@@ -59,7 +57,7 @@ public class ClienteService {
         return "Cadastro não efetuado.";
     }
 
-    private void deleteCliente(Long id){
+    public void deleteCliente(Integer id){
         Optional<Cliente> clienteOptional = clienteDao.findById(id);
 
         if(clienteOptional.isPresent()){

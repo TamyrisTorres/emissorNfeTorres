@@ -14,7 +14,7 @@ public class EmpresaService {
     @Autowired
     private EmpresaDao empresaDao;
 
-    private String addEmpresa(Empresa empresa){
+    public String addEmpresa(Empresa empresa){
         boolean hasEmpresa = empresaDao.existsById(empresa.getId());
 
         if (!hasEmpresa){
@@ -26,7 +26,7 @@ public class EmpresaService {
         return "Empresa não cadastrado";
     }
 
-    private List<Empresa> getAllEmpresas(){
+    public List<Empresa> getAllEmpresas(){
         List<Empresa> empresas = empresaDao.findAll();
 
         if(!empresas.isEmpty()){
@@ -35,7 +35,7 @@ public class EmpresaService {
         return null;
     }
 
-    private Empresa getEmpresa(Long id){
+    public Empresa getEmpresa(Integer id){
         Optional<Empresa> empresa = empresaDao.findById(id);
 
         if (empresa.isPresent()){
@@ -45,7 +45,7 @@ public class EmpresaService {
         return null;
     }
 
-    private String upDateEmpresa(Long id, Empresa newEmpresa){
+    public String upDateEmpresa(Integer id, Empresa newEmpresa){
         Optional<Empresa> empresaOptional = empresaDao.findById(id);
 
         if(empresaOptional.isPresent()){
@@ -59,7 +59,7 @@ public class EmpresaService {
         return "Cadastro não efetuado.";
     }
 
-    private void deleteEmpresa(Long id){
+    public void deleteEmpresa(Integer id){
         Optional<Empresa> empresaOptional = empresaDao.findById(id);
 
         if(empresaOptional.isPresent()){

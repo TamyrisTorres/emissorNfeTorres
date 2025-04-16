@@ -1,43 +1,25 @@
 package com.TTecnologia.EmissorNfeTorres.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.validator.constraints.br.CNPJ;
-import org.hibernate.validator.constraints.br.CPF;
 
 @Entity
-@AllArgsConstructor
 @Table(name = "cliente")
 public class Cliente {
 
 
     @Id
-    @Setter
-    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    @Setter
-    @Getter
-    @Column(name = "nome-cliente", nullable = false)
+    @Column(name = "nome", nullable = false)
     private String nome;
 
-    @Setter
-    @Getter
-    @Column(name = "cnpj-cpf", unique = true)
+    @Column(name = "cnpjcpf", unique = true,  nullable = false)
     private String cnpjCpf;
 
-
-    @Setter
-    @Getter
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "endereco_id", referencedColumnName = "id")
+    @Embedded
     private Endereco endereco;
 
-    @Setter
-    @Getter
     @Column(name = "telefone")
     private String telefone;
 
@@ -51,4 +33,44 @@ public class Cliente {
     }
 
     public Cliente() {}
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getCnpjCpf() {
+        return cnpjCpf;
+    }
+
+    public void setCnpjCpf(String cnpjCpf) {
+        this.cnpjCpf = cnpjCpf;
+    }
+
+    public Endereco getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(Endereco endereco) {
+        this.endereco = endereco;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
 }

@@ -2,16 +2,11 @@ package com.TTecnologia.EmissorNfeTorres.model.entity;
 
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@AllArgsConstructor
 @Table(name = "NotaFiscal")
 public class NotaFiscal {
 
@@ -22,25 +17,19 @@ public class NotaFiscal {
     @Column(name = "numero", nullable = false, unique = true)
     private String numero;
 
-    @Setter
-    @Getter
-    @NotNull
-    @Column(name = "empresa")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "empresa_id", referencedColumnName = "id")
     private Empresa empresa;
 
-    @Setter
-    @Getter
-    @NotNull
-    @Column(name = "cliente")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "cliente_id", referencedColumnName = "id")
     private Cliente cliente;
 
     @Column(name = "data_emissao")
     private LocalDate dataEmissao;
 
-    @Setter
-    @Getter
-    @NotNull(message = "O endereço não pode ser nulo.")
-    @Column(name = "produtos")
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "nota_fiscal_id")
     private List<Produto> produtoList;
 
 
@@ -63,4 +52,68 @@ public class NotaFiscal {
     }
 
     public NotaFiscal() {}
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public Empresa getEmpresa() {
+        return empresa;
+    }
+
+    public void setEmpresa( Empresa empresa) {
+        this.empresa = empresa;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente( Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public LocalDate getDataEmissao() {
+        return dataEmissao;
+    }
+
+    public void setDataEmissao(LocalDate dataEmissao) {
+        this.dataEmissao = dataEmissao;
+    }
+
+    public List<Produto> getProdutoList() {
+        return produtoList;
+    }
+
+    public void setProdutoList(List<Produto> produtoList) {
+        this.produtoList = produtoList;
+    }
+
+    public Double getValorTotal() {
+        return valorTotal;
+    }
+
+    public void setValorTotal(Double valorTotal) {
+        this.valorTotal = valorTotal;
+    }
+
+    public String getChaveAcesso() {
+        return chaveAcesso;
+    }
+
+    public void setChaveAcesso(String chaveAcesso) {
+        this.chaveAcesso = chaveAcesso;
+    }
 }
