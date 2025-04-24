@@ -1,10 +1,14 @@
 package com.TTecnologia.EmissorNfeTorres.service;
 
 import com.TTecnologia.EmissorNfeTorres.dao.EmpresaDao;
+import com.TTecnologia.EmissorNfeTorres.exception.EmpresaException.ExceptionInvalidEmpresa;
+import com.TTecnologia.EmissorNfeTorres.exception.NfeException.NfeInvalidException;
 import com.TTecnologia.EmissorNfeTorres.model.entity.Empresa;
+import com.TTecnologia.EmissorNfeTorres.model.utlis.ValidationCpfCnpj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,16 +18,14 @@ public class EmpresaService {
     @Autowired
     private EmpresaDao empresaDao;
 
-    public String addEmpresa(Empresa empresa){
+    public void addEmpresa(Empresa empresa) {
         boolean hasEmpresa = empresaDao.existsById(empresa.getId());
 
-        if (!hasEmpresa){
-            empresaDao.save(empresa);
-
-            return "Empresa cadastrado com Sucesso.";
+        if (hasEmpresa && !Empresa.validDataEmpresa(empresa)){
+            throw new NfeInvalidException("Empresa não cadastrada.");
         }
 
-        return "Empresa não cadastrado";
+        empresaDao.save(empresa);
     }
 
     public List<Empresa> getAllEmpresas(){
@@ -38,25 +40,26 @@ public class EmpresaService {
     public Empresa getEmpresa(Integer id){
         Optional<Empresa> empresa = empresaDao.findById(id);
 
-        if (empresa.isPresent()){
-            return empresa.get();
+        if (empresa.isEmpty()){
+            throw new ExceptionInvalidEmpresa(
+                    "Empresa não consta em nosso registro.");
         }
 
-        return null;
+        return empresa.get();
     }
 
-    public String upDateEmpresa(Integer id, Empresa newEmpresa){
+    public void upDateEmpresa(Integer id, Empresa newEmpresa){
         Optional<Empresa> empresaOptional = empresaDao.findById(id);
 
-        if(empresaOptional.isPresent()){
-            Empresa empresa = empresaOptional.get();
-            newEmpresa.setId(empresa.getId());
-            empresaDao.save(newEmpresa);
-
-            return "Cadastro do empresa efetuado com sucesso.";
+        if(empresaOptional.isEmpty()){
+            throw new ExceptionInvalidEmpresa(
+                    "Empresa não consta em nosso registro");
         }
 
-        return "Cadastro não efetuado.";
+        Empresa empresa = newEmpresa.changeEmpresa(
+                empresaOptional.get(), newEmpresa);
+
+        empresaDao.save(empresa);
     }
 
     public void deleteEmpresa(Integer id){

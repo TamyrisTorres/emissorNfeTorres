@@ -80,4 +80,18 @@ public class Produto {
     public void setPreco(Double preco) {
         this.preco = preco;
     }
+
+    public Produto changeProduto(Produto produto, Produto newProduto){
+
+        // TODO: CRIAR UMA VALIDAÇÃO PARA OS PRODUTOS
+
+            produto.setCodigo(newProduto.getCodigo());
+            produto.setNome(newProduto.getNome());
+            produto.setDescricao(newProduto.getDescricao());
+            produto.setPreco(newProduto.getPreco());
+            produto.setQuantidade(newProduto.getQuantidade());
+
+            return produto;
+
+    }
 }

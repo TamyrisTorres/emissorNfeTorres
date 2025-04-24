@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.ToDoubleBiFunction;
 
 @Entity
 @Table(name = "NotaFiscal")
@@ -115,5 +116,16 @@ public class NotaFiscal {
 
     public void setChaveAcesso(String chaveAcesso) {
         this.chaveAcesso = chaveAcesso;
+    }
+
+    public NotaFiscal changeNfe(NotaFiscal notaFiscal, NotaFiscal newNotaFiscal) {
+
+        // TODO: CRIAR VALIDAÇÃO PARA SABER SE A NOTA FISCAL JÁ FOI ENVIADA PARA A SEFAZ.
+
+        notaFiscal.setCliente(newNotaFiscal.getCliente());
+        notaFiscal.setEmpresa(newNotaFiscal.getEmpresa());
+        notaFiscal.setProdutoList(newNotaFiscal.getProdutoList());
+
+        return notaFiscal;
     }
 }

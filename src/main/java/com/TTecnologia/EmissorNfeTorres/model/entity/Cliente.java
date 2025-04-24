@@ -1,11 +1,14 @@
 package com.TTecnologia.EmissorNfeTorres.model.entity;
 
+import com.TTecnologia.EmissorNfeTorres.exception.CpfException.ExceptionCpfInvalid;
+import com.TTecnologia.EmissorNfeTorres.model.utlis.ValidationCpfCnpj;
 import jakarta.persistence.*;
+
+import java.io.IOException;
 
 @Entity
 @Table(name = "cliente")
 public class Cliente {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,4 +76,24 @@ public class Cliente {
     public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
+
+    public static Boolean validDataClient(Cliente cliente) {
+        return ValidationCpfCnpj.validationCNPJ(cliente.cnpjCpf) ||
+                ValidationCpfCnpj.isValidCPF(cliente.cnpjCpf);
+    }
+
+    public Cliente changeClient(Cliente cliente, Cliente newCliente){
+
+        if (validDataClient(newCliente)){
+            cliente.setNome(newCliente.getNome());
+            cliente.setCnpjCpf(newCliente.getCnpjCpf());
+            cliente.setEndereco(newCliente.getEndereco());
+            cliente.setTelefone(newCliente.getTelefone());
+
+            return cliente;
+        }
+
+        return null;
+    }
 }
+

@@ -1,6 +1,9 @@
 package com.TTecnologia.EmissorNfeTorres.model.entity;
 
+import com.TTecnologia.EmissorNfeTorres.model.utlis.ValidationCpfCnpj;
 import jakarta.persistence.*;
+
+import java.io.IOException;
 
 
 @Entity
@@ -58,5 +61,22 @@ public class Empresa {
 
     public void setEndereco(Endereco endereco) {
         this.endereco = endereco;
+    }
+
+    public static Boolean validDataEmpresa(Empresa empresa) {
+        return ValidationCpfCnpj.validationCNPJ(empresa.getCNPJ());
+    }
+
+    public Empresa changeEmpresa(Empresa empresa, Empresa newEmpresa){
+
+        if (validDataEmpresa(newEmpresa)){
+            empresa.setRazaoSocial(newEmpresa.getRazaoSocial());
+            empresa.setCNPJ(newEmpresa.getCNPJ());
+            empresa.setEndereco(newEmpresa.getEndereco());
+
+            return empresa;
+        }
+
+        return null;
     }
 }

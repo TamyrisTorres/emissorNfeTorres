@@ -1,6 +1,7 @@
 package com.TTecnologia.EmissorNfeTorres.service;
 
 import com.TTecnologia.EmissorNfeTorres.dao.ClienteDao;
+import com.TTecnologia.EmissorNfeTorres.exception.clientException.ClientInvalidException;
 import com.TTecnologia.EmissorNfeTorres.model.entity.Cliente;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,14 +15,14 @@ public class ClienteService {
     @Autowired
     private ClienteDao clienteDao;
 
-    public Cliente addCliente(Cliente cliente){
-        Optional<Cliente> clienteOptional = clienteDao.findById(cliente.getId());
+    public void addCliente(Cliente newcliente){
+        Optional<Cliente> clienteOptional = clienteDao.findById(newcliente.getId());
 
-        if (!clienteOptional.isPresent()){
-            return clienteDao.save(cliente);
+        if (clienteOptional.isPresent() && !Cliente.validDataClient(newcliente)){
+            throw new ClientInvalidException("Cliente não cadastrado");
         }
 
-        return null;
+        clienteDao.save(newcliente);
     }
 
     public List<Cliente> getAllClientes(){
@@ -30,38 +31,36 @@ public class ClienteService {
         if(!clientes.isEmpty()){
             return clientes;
         }
+
         return null;
     }
 
     public Cliente getCliente(Integer id){
         Optional<Cliente> cliente = clienteDao.findById(id);
 
-        if (cliente.isPresent()){
-            return cliente.get();
-        }
-
-        return null;
+        return cliente.orElse(null);
     }
 
-    public String upDateCliente(Integer id, Cliente newCliente){
+    public void upDateCliente(Integer id, Cliente newCliente){
         Optional<Cliente> clienteOptional = clienteDao.findById(id);
 
-        if(clienteOptional.isPresent()){
-            Cliente cliente = clienteOptional.get();
-            newCliente.setId(cliente.getId());
-            clienteDao.save(newCliente);
-
-            return "Cadastro do cliente efetuado com sucesso.";
+        if(clienteOptional.isEmpty()){
+            throw new ClientInvalidException(
+                    "Cliente não consta em nosso registro.");
         }
 
-        return "Cadastro não efetuado.";
+        Cliente cliente = newCliente.changeClient(clienteOptional.get(), newCliente);
+        clienteDao.save(cliente);
     }
 
     public void deleteCliente(Integer id){
         Optional<Cliente> clienteOptional = clienteDao.findById(id);
 
-        if(clienteOptional.isPresent()){
-            clienteDao.deleteById(id);
+        if(clienteOptional.isEmpty()){
+            throw new ClientInvalidException(
+                    "Cliente não consta em nosso registro.");
         }
+
+        clienteDao.deleteById(id);
     }
 }

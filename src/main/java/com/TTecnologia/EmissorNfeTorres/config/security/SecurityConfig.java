@@ -23,9 +23,8 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/v3/api-docs.yaml"
                         ).permitAll()
-                        .anyRequest().authenticated()
-                );
-
+                        .requestMatchers("http://localhost:8081/swagger-ui/index.html#/**").hasRole("ADM")
+                        .anyRequest().authenticated());
 
         return http.build();
     }
@@ -35,7 +34,7 @@ public class SecurityConfig {
         UserDetails userDetails = User.withDefaultPasswordEncoder()
                 .username("Tata")
                 .password("tata")
-                .roles("USER")
+                .roles("ADM")
                 .build();
 
         return new InMemoryUserDetailsManager(userDetails);

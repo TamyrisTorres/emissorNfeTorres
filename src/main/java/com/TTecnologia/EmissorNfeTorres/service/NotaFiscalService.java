@@ -1,6 +1,7 @@
 package com.TTecnologia.EmissorNfeTorres.service;
 
 import com.TTecnologia.EmissorNfeTorres.dao.NotaFiscalDao;
+import com.TTecnologia.EmissorNfeTorres.exception.NfeException.NfeInvalidException;
 import com.TTecnologia.EmissorNfeTorres.model.entity.NotaFiscal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,16 +16,15 @@ public class NotaFiscalService {
     private NotaFiscalDao notaFiscalDao;
 
 
-    public String addNotaFiscal(NotaFiscal notaFiscal){
+    public void addNotaFiscal(NotaFiscal notaFiscal){
         boolean hasNotaFiscal = notaFiscalDao.existsById(notaFiscal.getId());
 
-        if (!hasNotaFiscal){
-            notaFiscalDao.save(notaFiscal);
-
-            return "NotaFiscal cadastrado com Sucesso.";
+        if (hasNotaFiscal){
+            throw new NfeInvalidException(
+                    "Nota fiscal não cadastrada");
         }
 
-        return "NotaFiscal não cadastrado";
+        notaFiscalDao.save(notaFiscal);
     }
 
     public List<NotaFiscal> getAllNotaFiscals(){
@@ -39,25 +39,20 @@ public class NotaFiscalService {
     public NotaFiscal getNotaFiscal(Integer id){
         Optional<NotaFiscal> notaFiscal = notaFiscalDao.findById(id);
 
-        if (notaFiscal.isPresent()){
-            return notaFiscal.get();
-        }
+        return notaFiscal.orElse(null);
 
-        return null;
     }
 
-    public String upDateNotaFiscal(Integer id, NotaFiscal newNotaFiscal){
+    public void upDateNotaFiscal(Integer id, NotaFiscal newNotaFiscal){
         Optional<NotaFiscal> notaFiscalOptional = notaFiscalDao.findById(id);
 
-        if(notaFiscalOptional.isPresent()){
-            NotaFiscal notaFiscal = notaFiscalOptional.get();
-            newNotaFiscal.setId(notaFiscal.getId());
-            notaFiscalDao.save(newNotaFiscal);
-
-            return "Cadastro do notaFiscal efetuado com sucesso.";
+        if(notaFiscalOptional.isEmpty()){
+            throw new NfeInvalidException(
+                    "Nota fiscal não encontrada em nosso registro");
         }
 
-        return "Cadastro não efetuado.";
+        NotaFiscal notaFiscal = newNotaFiscal.changeNfe(notaFiscalOptional.get(), newNotaFiscal);
+        notaFiscalDao.save(notaFiscal);
     }
 
     public void deleteNotaFiscal(Integer id){

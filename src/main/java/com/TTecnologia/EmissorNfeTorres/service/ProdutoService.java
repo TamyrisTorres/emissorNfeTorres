@@ -1,6 +1,7 @@
 package com.TTecnologia.EmissorNfeTorres.service;
 
 import com.TTecnologia.EmissorNfeTorres.dao.ProdutoDao;
+import com.TTecnologia.EmissorNfeTorres.exception.ProdutoException.ExceptionProductInvalid;
 import com.TTecnologia.EmissorNfeTorres.model.entity.Produto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,14 +16,14 @@ public class ProdutoService {
     private ProdutoDao produtoDao;
 
 
-    public Produto addProduto(Produto produto){
+    public void addProduto(Produto produto){
         boolean hasProduto = produtoDao.existsById(produto.getId());
 
-        if (!hasProduto){
-            return produtoDao.save(produto);
+        if (hasProduto){
+            throw new ExceptionProductInvalid("Produto não cadastrado.");
         }
 
-        return null;
+        produtoDao.save(produto);
     }
 
     public List<Produto> getAllProdutos(){
@@ -31,31 +32,26 @@ public class ProdutoService {
         if(!produtos.isEmpty()){
             return produtos;
         }
+
         return null;
     }
 
     public Produto getProduto(Integer id){
         Optional<Produto> produto = produtoDao.findById(id);
 
-        if (produto.isPresent()){
-            return produto.get();
-        }
-
-        return null;
+        return produto.orElse(null);
     }
 
-    public String upDateProduto(Integer id, Produto newProduto){
+    public void upDateProduto(Integer id, Produto newProduto){
         Optional<Produto> produtoOptional = produtoDao.findById(id);
 
-        if(produtoOptional.isPresent()){
-            Produto produto = produtoOptional.get();
-            newProduto.setId(produto.getId());
-            produtoDao.save(newProduto);
-
-            return "Cadastro do produto efetuado com sucesso.";
+        if(produtoOptional.isEmpty()){
+            throw new ExceptionProductInvalid(
+                    "Produto não foi encontrado em nosso registro.");
         }
 
-        return "Cadastro não efetuado.";
+        Produto produto = newProduto.changeProduto(produtoOptional.get(), newProduto);
+        produtoDao.save(produto);
     }
 
     public void deleteProduto(Integer id){
