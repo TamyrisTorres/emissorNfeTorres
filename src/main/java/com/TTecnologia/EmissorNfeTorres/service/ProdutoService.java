@@ -1,11 +1,17 @@
 package com.TTecnologia.EmissorNfeTorres.service;
 
+import com.TTecnologia.EmissorNfeTorres.dao.ItemNotaFiscalDao;
 import com.TTecnologia.EmissorNfeTorres.dao.ProdutoDao;
+import com.TTecnologia.EmissorNfeTorres.dto.ItemNotaFiscalDTO;
+import com.TTecnologia.EmissorNfeTorres.dto.ProdutoDTO;
 import com.TTecnologia.EmissorNfeTorres.exception.ProdutoException.ExceptionProductInvalid;
+import com.TTecnologia.EmissorNfeTorres.model.entity.ItemNotaFiscal;
+import com.TTecnologia.EmissorNfeTorres.model.entity.NotaFiscal;
 import com.TTecnologia.EmissorNfeTorres.model.entity.Produto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,14 +21,18 @@ public class ProdutoService {
     @Autowired
     private ProdutoDao produtoDao;
 
+    @Autowired
+    private ItemNotaFiscalDao itemNotaFiscalDao;
 
-    public void addProduto(Produto produto){
-        boolean hasProduto = produtoDao.existsById(produto.getId());
 
-        if (hasProduto){
-            throw new ExceptionProductInvalid("Produto não cadastrado.");
+    public void addProduto(ProdutoDTO produtoDTO){
+        Optional<Produto> produtoOptional = produtoDao.findByCodigo(produtoDTO.codigo());
+
+        if (produtoOptional.isPresent()){
+            throw new ExceptionProductInvalid("Produto já cadastrado.");
         }
 
+        Produto produto = new Produto(produtoDTO);
         produtoDao.save(produto);
     }
 
@@ -45,7 +55,7 @@ public class ProdutoService {
     public void upDateProduto(Integer id, Produto newProduto){
         Optional<Produto> produtoOptional = produtoDao.findById(id);
 
-        if(produtoOptional.isEmpty()){
+        if(produtoOptional.isEmpty() || newProduto == null){
             throw new ExceptionProductInvalid(
                     "Produto não foi encontrado em nosso registro.");
         }

@@ -2,11 +2,17 @@ package com.TTecnologia.EmissorNfeTorres.model.entity;
 
 
 import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.function.ToDoubleBiFunction;
 
+@XmlRootElement(name = "NFe")
+@XmlAccessorType(XmlAccessType.FIELD)
 @Entity
 @Table(name = "NotaFiscal")
 public class NotaFiscal {
@@ -15,44 +21,48 @@ public class NotaFiscal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "numero", nullable = false, unique = true)
-    private String numero;
-
-    @OneToOne(cascade = CascadeType.ALL)
+    @XmlElement(name = "Emitente")
+    @ManyToOne
     @JoinColumn(name = "empresa_id", referencedColumnName = "id")
     private Empresa empresa;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @XmlElement(name = "Destinatário")
+    @ManyToOne
     @JoinColumn(name = "cliente_id", referencedColumnName = "id")
     private Cliente cliente;
 
+    @XmlElement(name = "DatadeEmissão")
     @Column(name = "data_emissao")
     private LocalDate dataEmissao;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "nota_fiscal_id")
-    private List<Produto> produtoList;
+    @XmlElement(name = "Produtos")
+    @OneToMany(mappedBy = "notaFiscal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ItemNotaFiscal> itens = new ArrayList<>();
 
-
+    @XmlElement(name = "ValorTotal")
     @Column(name = "valor_total")
     private Double valorTotal;
 
-    @Column(name = "chave_acesso", length = 44, unique = true)
-    private String chaveAcesso;
+    @XmlElement(name = "ValorTotalDosImpostos")
+    @Column(name = "valor_total_impostos")
+    private Double valorTotalImpostos;
 
-    public NotaFiscal(String numero, Empresa empresa, Cliente cliente,
-                      LocalDate dataEmissao, List<Produto> produtoList,
-                      Double valorTotal, String chaveAcesso) {
-        this.numero = numero;
+    @OneToOne
+    private FileXML fileXML;
+
+    public NotaFiscal(
+            Empresa empresa, Cliente cliente,
+                      LocalDate dataEmissao, List<ItemNotaFiscal> itens,
+                      Double valorTotal, Double valorTotalImpostos) {
         this.empresa = empresa;
         this.cliente = cliente;
         this.dataEmissao = dataEmissao;
-        this.produtoList = produtoList;
+        this.itens = itens;
         this.valorTotal = valorTotal;
-        this.chaveAcesso = chaveAcesso;
+        this.valorTotalImpostos = valorTotalImpostos;
     }
 
-    public NotaFiscal() {}
+    public NotaFiscal(){}
 
     public Integer getId() {
         return id;
@@ -60,14 +70,6 @@ public class NotaFiscal {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getNumero() {
-        return numero;
-    }
-
-    public void setNumero(String numero) {
-        this.numero = numero;
     }
 
     public Empresa getEmpresa() {
@@ -94,12 +96,12 @@ public class NotaFiscal {
         this.dataEmissao = dataEmissao;
     }
 
-    public List<Produto> getProdutoList() {
-        return produtoList;
+    public List<ItemNotaFiscal> getItens() {
+        return itens;
     }
 
-    public void setProdutoList(List<Produto> produtoList) {
-        this.produtoList = produtoList;
+    public void setItens(List<ItemNotaFiscal> itens) {
+        this.itens = itens;
     }
 
     public Double getValorTotal() {
@@ -110,12 +112,40 @@ public class NotaFiscal {
         this.valorTotal = valorTotal;
     }
 
-    public String getChaveAcesso() {
-        return chaveAcesso;
+    public Double getValorTotalImpostos() {
+        return valorTotalImpostos;
     }
 
-    public void setChaveAcesso(String chaveAcesso) {
-        this.chaveAcesso = chaveAcesso;
+    public void setValorTotalImpostos(Double valorTotalImpostos) {
+        this.valorTotalImpostos = valorTotalImpostos;
+    }
+
+    public FileXML getFileXML() {
+        return fileXML;
+    }
+
+    public void setFileXML(FileXML fileXML) {
+        this.fileXML = fileXML;
+    }
+
+    public static NotaFiscal setUpNfe(Empresa empresa, Cliente cliente, List<ItemNotaFiscal> produtos){
+
+        NotaFiscal notaFiscal = new NotaFiscal();
+        notaFiscal.setEmpresa(empresa);
+        notaFiscal.setCliente(cliente);
+        notaFiscal.setItens(produtos);
+        notaFiscal.setDataEmissao(LocalDate.now());
+        notaFiscal.setValorTotal(calcularValorTotal(produtos));
+
+        double totalImpostos = 0.0;
+        for (ItemNotaFiscal itemNotaFiscal : produtos) {
+            totalImpostos += Produto.calcularTotalImpostos(
+                            itemNotaFiscal.getProduto(),
+                            itemNotaFiscal.getSubtotal());
+        }
+        notaFiscal.setValorTotalImpostos(totalImpostos);
+
+        return notaFiscal;
     }
 
     public NotaFiscal changeNfe(NotaFiscal notaFiscal, NotaFiscal newNotaFiscal) {
@@ -124,8 +154,12 @@ public class NotaFiscal {
 
         notaFiscal.setCliente(newNotaFiscal.getCliente());
         notaFiscal.setEmpresa(newNotaFiscal.getEmpresa());
-        notaFiscal.setProdutoList(newNotaFiscal.getProdutoList());
+        notaFiscal.setItens(newNotaFiscal.getItens());
 
         return notaFiscal;
+    }
+
+    private static double calcularValorTotal(List<ItemNotaFiscal> produtos) {
+        return produtos.stream().mapToDouble(p -> p.getPrecoUnitario() * p.getQuantidade()).sum();
     }
 }

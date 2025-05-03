@@ -2,6 +2,7 @@ package com.TTecnologia.EmissorNfeTorres.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,11 +21,12 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html",
                                 "/v3/api-docs.yaml"
                         ).permitAll()
-                        .requestMatchers("http://localhost:8081/swagger-ui/index.html#/**").hasRole("ADM")
-                        .anyRequest().authenticated());
+                        .requestMatchers("/**").hasRole("ADM")
+                        .anyRequest().authenticated())
+                .formLogin(Customizer.withDefaults())
+                .httpBasic(Customizer.withDefaults());;
 
         return http.build();
     }

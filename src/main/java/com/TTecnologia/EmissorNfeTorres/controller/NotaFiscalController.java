@@ -1,7 +1,10 @@
 package com.TTecnologia.EmissorNfeTorres.controller;
 
+import com.TTecnologia.EmissorNfeTorres.dto.NfeSimplifyRequestDTO;
+import com.TTecnologia.EmissorNfeTorres.model.entity.ItemNotaFiscal;
 import com.TTecnologia.EmissorNfeTorres.model.entity.NotaFiscal;
 import com.TTecnologia.EmissorNfeTorres.service.NotaFiscalService;
+import jakarta.xml.bind.JAXBException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +20,8 @@ public class NotaFiscalController {
 
 
     @PostMapping
-    public void createNotaFiscal(@RequestBody NotaFiscal notaFiscal){
-        notaFiscalService.addNotaFiscal(notaFiscal);
+    public ResponseEntity<NotaFiscal> createNotaFiscal(@RequestBody NfeSimplifyRequestDTO notaFiscalDto) throws JAXBException {
+        return ResponseEntity.ok(notaFiscalService.addNotaFiscal(notaFiscalDto));
     }
 
     @GetMapping
@@ -33,6 +36,11 @@ public class NotaFiscalController {
             return ResponseEntity.ok(notaFiscal);
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/itensNfe/{id}")
+    public ResponseEntity<List<ItemNotaFiscal>> getListItensNotaFiscal(@PathVariable Integer id){
+        return ResponseEntity.ok(notaFiscalService.getItensNfeById(id));
     }
 
     @DeleteMapping("/{id}")

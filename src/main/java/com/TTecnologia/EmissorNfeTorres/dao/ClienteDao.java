@@ -9,4 +9,8 @@ import java.util.Optional;
 @Repository
 public interface ClienteDao extends JpaRepository<Cliente, Integer> {
 
+    Optional<Cliente> findByNome(String nome);
+
+    Optional<Cliente> findByCnpjCpf(String cnpjCpf);
+
 }

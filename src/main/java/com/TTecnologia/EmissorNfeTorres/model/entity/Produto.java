@@ -1,11 +1,15 @@
 package com.TTecnologia.EmissorNfeTorres.model.entity;
 
+import com.TTecnologia.EmissorNfeTorres.dto.ProdutoDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "produto")
 public class Produto {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,12 +27,34 @@ public class Produto {
 
     private Double preco;
 
-    public Produto(Long codigo, String nome, String descricao, Long quantidade, Double preco) {
+    private String ncm;
+
+    private String cfop;
+
+    @Embedded
+    private Imposto imposto;
+
+    public Produto(Long codigo, String nome, String descricao, Long quantidade,
+                   Double preco, String ncm, String cfop, Imposto imposto) {
         this.codigo = codigo;
         this.nome = nome;
         this.descricao = descricao;
         this.quantidade = quantidade;
         this.preco = preco;
+        this.ncm = ncm;
+        this.cfop = cfop;
+        this.imposto = imposto;
+    }
+
+    public Produto (ProdutoDTO produtoDTO){
+        this.codigo = produtoDTO.codigo();
+        this.nome = produtoDTO.nome();
+        this.descricao = produtoDTO.descricao();
+        this.quantidade = produtoDTO.quantidade();
+        this.preco = produtoDTO.preco();
+        this.ncm = produtoDTO.ncm();
+        this.cfop = produtoDTO.cfop();
+        this.imposto = produtoDTO.imposto();
     }
 
     public Produto() {}
@@ -81,17 +107,48 @@ public class Produto {
         this.preco = preco;
     }
 
-    public Produto changeProduto(Produto produto, Produto newProduto){
-
-        // TODO: CRIAR UMA VALIDAÇÃO PARA OS PRODUTOS
-
-            produto.setCodigo(newProduto.getCodigo());
-            produto.setNome(newProduto.getNome());
-            produto.setDescricao(newProduto.getDescricao());
-            produto.setPreco(newProduto.getPreco());
-            produto.setQuantidade(newProduto.getQuantidade());
-
-            return produto;
-
+    public String getNcm() {
+        return ncm;
     }
+
+    public void setNcm(String ncm) {
+        this.ncm = ncm;
+    }
+
+    public String getCfop() {
+        return cfop;
+    }
+
+    public void setCfop(String cfop) {
+        this.cfop = cfop;
+    }
+
+    public Imposto getImposto() {
+        return imposto;
+    }
+
+    public void setImposto(Imposto imposto) {
+        this.imposto = imposto;
+    }
+
+    public Produto changeProduto(Produto produto, Produto newProduto){
+       produto.setCodigo(newProduto.getCodigo());
+       produto.setNome(newProduto.getNome());
+       produto.setDescricao(newProduto.getDescricao());
+       produto.setPreco(newProduto.getPreco());
+       produto.setQuantidade(newProduto.getQuantidade());
+       produto.setNcm(newProduto.getNcm());
+       produto.setCfop(newProduto.getCfop());
+       produto.setImposto(newProduto.getImposto());
+
+       return produto;
+    }
+
+    public void changeStock(ItemNotaFiscal itemNotaFiscal) {
+        itemNotaFiscal.getId();
+    }
+
+    public static Double calcularTotalImpostos(Produto produto, Double valorProduto){
+        return Imposto.setupImpostos(produto, valorProduto);
+    };
 }

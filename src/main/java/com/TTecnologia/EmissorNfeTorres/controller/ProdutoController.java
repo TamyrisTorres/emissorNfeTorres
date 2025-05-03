@@ -1,5 +1,6 @@
 package com.TTecnologia.EmissorNfeTorres.controller;
 
+import com.TTecnologia.EmissorNfeTorres.dto.ProdutoDTO;
 import com.TTecnologia.EmissorNfeTorres.model.entity.Produto;
 import com.TTecnologia.EmissorNfeTorres.service.ProdutoService;
 import com.TTecnologia.EmissorNfeTorres.service.ProdutoService;
@@ -19,8 +20,8 @@ public class ProdutoController {
 
 
     @PostMapping
-    public void createProduto(@RequestBody Produto produto){
-        produtoService.addProduto(produto);
+    public void createProduto(@RequestBody ProdutoDTO produtoDTO){
+        produtoService.addProduto(produtoDTO);
     }
 
     @GetMapping

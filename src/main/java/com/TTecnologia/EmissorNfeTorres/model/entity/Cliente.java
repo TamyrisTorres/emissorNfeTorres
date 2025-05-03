@@ -1,10 +1,7 @@
 package com.TTecnologia.EmissorNfeTorres.model.entity;
 
-import com.TTecnologia.EmissorNfeTorres.exception.CpfException.ExceptionCpfInvalid;
 import com.TTecnologia.EmissorNfeTorres.model.utlis.ValidationCpfCnpj;
 import jakarta.persistence.*;
-
-import java.io.IOException;
 
 @Entity
 @Table(name = "cliente")
